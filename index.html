@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOve Coffe</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.18);
+            --glass-highlight: rgba(255, 255, 255, 0.25);
+            --glass-blur: 24px;
+            --accent-green: #7cdb8a;
+            --accent-teal: #5ecfcf;
+            --glow-green: rgba(124, 219, 138, 0.35);
+            --glow-teal: rgba(94, 207, 207, 0.25);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+            width: 100%;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.55)), url('istockphoto-1129175103-170667a.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            font-family: 'Poppins', sans-serif;
+            color: white;
+            padding: 0;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* ====== ANIMATED OVERLAY ====== */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(16, 60, 36, 0.45) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(6, 50, 60, 0.35) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 100%, rgba(10, 30, 20, 0.5) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+            animation: overlayShift 12s ease-in-out infinite alternate;
+        }
+
+        @keyframes overlayShift {
+            0% { opacity: 0.7; }
+            50% { opacity: 0.9; }
+            100% { opacity: 0.75; }
+        }
+
+        /* ====== FLOATING PARTICLES ====== */
+        .particles-container {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 70%);
+            animation: floatParticle linear infinite;
+            opacity: 0;
+        }
+
+        @keyframes floatParticle {
+            0% {
+                transform: translateY(100vh) translateX(0) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-10vh) translateX(100px) scale(1);
+                opacity: 0;
+            }
+        }
+
+        /* ====== NAVIGATION BAR ====== */
+        .navbar {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.04) 100%);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 50px;
+            box-shadow: 
+                0 8px 32px rgba(0,0,0,0.12),
+                inset 0 1px 0 rgba(255,255,255,0.15);
+            animation: navSlideDown 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        @keyframes navSlideDown {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        .nav-logo {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-teal));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-right: 20px;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 400;
+            padding: 8px 16px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: white;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .nav-link.active {
+            color: white;
+            background: rgba(255,255,255,0.12);
+        }
+
+        /* ====== MAIN WRAPPER ====== */
+        .main-wrapper {
+            padding: 130px 60px 60px 60px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* ====== SCROLL REVEAL (отключено, элементы отображаются сразу) ====== */
+        .reveal,
+        .reveal-left,
+        .reveal-right,
+        .reveal-scale {
+            opacity: 1 !important;
+            transform: none !important;
+            transition: none !important;
+        }
+
+        /* ====== HEADER ====== */
+        .header-content {
+            max-width: 600px;
+        }
+
+        h1 {
+            font-size: 72px;
+            margin-bottom: 8px;
+            font-weight: 700;
+            letter-spacing: -2px;
+            line-height: 1.05;
+        }
+
+        .title-main {
+            background: linear-gradient(135deg, #ffffff 0%, #b8e6c8 50%, #ffffff 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmerText 4s ease-in-out infinite;
+        }
+
+        @keyframes shimmerText {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .title-ghost {
+            -webkit-text-fill-color: transparent;
+            -webkit-text-stroke: 1px rgba(255, 255, 255, 0.15);
+            font-size: 72px;
+            font-weight: 700;
+            letter-spacing: -2px;
+            line-height: 1.05;
+            margin-bottom: 24px;
+            transition: all 0.5s ease;
+        }
+
+        .title-ghost:hover {
+            -webkit-text-stroke: 1px rgba(255, 255, 255, 0.4);
+            text-shadow: 0 0 40px rgba(124, 219, 138, 0.2);
+        }
+
+        .subtitle {
+            font-size: 17px;
+            line-height: 1.8;
+            margin-bottom: 35px;
+            color: rgba(255, 255, 255, 0.75);
+            font-weight: 300;
+            max-width: 480px;
+        }
+
+        /* ====== BUTTONS ====== */
+        .button-group {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .btn {
+            color: white;
+            border: none;
+            padding: 15px 36px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 50px;
+            font-family: 'Poppins', sans-serif;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            text-decoration: none;
+        }
+
+       
+        
+
+  
+
+
+      
+
+        
+
+        .btn-glass {
+            background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.04) 100%);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 
+                0 8px 30px rgba(0,0,0,0.1),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+                text-decoration: none;
+                width: 30%;
+                text-align: center;
+        }
+
+        .btn-glass:hover {
+            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.08) 100%);
+            transform: translateY(-3px);
+            box-shadow: 
+                0 14px 40px rgba(0,0,0,0.15),
+                inset 0 1px 0 rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.35);
+        }
+
+        .btn-glass:active {
+            transform: translateY(-1px);
+        }
+
+        .play-button {
+            border-radius: 50% !important;
+            width: 54px !important;
+            height: 54px !important;
+            padding: 0 !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            border: 1px solid rgba(255,255,255,0.25) !important;
+            animation: pulseGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(124, 219, 138, 0.4), 0 8px 30px rgba(0,0,0,0.1);
+            }
+            50% {
+                box-shadow: 0 0 0 12px rgba(124, 219, 138, 0), 0 8px 30px rgba(0,0,0,0.1);
+            }
+        }
+
+        /* ====== STATS SECTION ====== */
+        .stats-row {
+            display: flex;
+            gap: 40px;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .stat-item {
+            text-align: left;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-teal));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: rgba(255,255,255,0.5);
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+
+        /* ====== CARDS ====== */
+        .cards-container {
+            display: flex;
+            flex-direction: row;
+            align-items: stretch;
+            gap: 24px;
+            margin-top: 80px;
+        }
+
+        .glass-card {
+            padding: 32px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.03) 100%);
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            width: 420px;
+            max-width: 100%;
+            box-shadow: 
+                0 20px 60px rgba(0,0,0,0.1),
+                inset 0 1px 0 rgba(255,255,255,0.12);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Glass refraction highlight */
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 50%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, transparent 100%);
+            border-radius: 28px 28px 0 0;
+            pointer-events: none;
+        }
+
+        /* Sweep shine */
+        .glass-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+        }
+
+        .glass-card:hover::after {
+            left: 150%;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-10px) scale(1.01);
+            box-shadow: 
+                0 30px 80px rgba(0,0,0,0.2),
+                0 0 40px var(--glow-green),
+                inset 0 1px 0 rgba(255,255,255,0.2);
+            border-color: var(--glass-highlight);
+        }
+
+        .glass-card.wide {
+            width: 680px;
+            max-width: 100%;
+        }
+
+        /* ====== REVIEW CARD ====== */
+        .review-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            margin-right: 15px;
+            border: 2px solid rgba(255,255,255,0.3);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            object-fit: cover;
+        }
+
+        .avatar:hover {
+            transform: scale(1.15) rotate(5deg);
+            border-color: var(--accent-green);
+            box-shadow: 0 4px 20px var(--glow-green);
+        }
+
+        .reviewer-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .reviewer-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .stars {
+            font-size: 16px;
+            color: #ffd700;
+            letter-spacing: 2px;
+            filter: drop-shadow(0 2px 8px rgba(255,215,0,0.4));
+            animation: starTwinkle 2s ease-in-out infinite;
+        }
+
+        @keyframes starTwinkle {
+            0%, 100% { filter: drop-shadow(0 2px 8px rgba(255,215,0,0.4)); }
+            50% { filter: drop-shadow(0 2px 16px rgba(255,215,0,0.7)); }
+        }
+
+        .card-text {
+            font-size: 15px;
+            line-height: 1.7;
+            color: rgba(255,255,255,0.8);
+            font-weight: 300;
+        }
+
+        /* ====== NATURE CARD ====== */
+        .card-title {
+            font-size: 36px;
+            margin-bottom: 16px;
+            font-weight: 700;
+            text-align: center;
+            background: linear-gradient(135deg, #ffffff 0%, var(--accent-green) 50%, var(--accent-teal) 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmerText 4s ease-in-out infinite;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .card-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: rgba(124, 219, 138, 0.15);
+            border: 1px solid rgba(124, 219, 138, 0.3);
+            border-radius: 20px;
+            font-size: 11px;
+            color: var(--accent-green);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .card-badge-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            animation: badgePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* ====== PLANT SVG CARD ====== */
+        .plant-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .plant-svg {
+            filter: drop-shadow(0 15px 30px rgba(0,0,0,0.3));
+            margin-bottom: 20px;
+        }
+
+        /* ====== COFFEE STEAM ANIMATION ====== */
+        .coffee-steam {
+            animation: steamRise 3s ease-in-out infinite;
+        }
+
+        .steam-1 {
+            animation-delay: 0s;
+        }
+
+        .steam-2 {
+            animation-delay: 1s;
+        }
+
+        .steam-3 {
+            animation-delay: 2s;
+        }
+
+        @keyframes steamRise {
+            0% {
+                opacity: 0;
+                transform: translateY(4px);
+            }
+            35% {
+                opacity: 0.7;
+            }
+            70% {
+                opacity: 0.4;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+        }
+
+        /* ====== BOTTOM SECTION ====== */
+        .bottom-section {
+            margin-top: 80px;
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .bottom-text {
+            font-size: 22px;
+            max-width: 700px;
+            line-height: 1.7;
+            color: rgba(255,255,255,0.8);
+            font-weight: 300;
+        }
+
+        .bottom-text strong {
+            color: white;
+            font-weight: 600;
+        }
+
+        .bottom-accent {
+            width: 4px;
+            height: 80px;
+            background: linear-gradient(180deg, var(--accent-green), transparent);
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+
+        /* ====== FOOTER ====== */
+        .footer {
+            margin-top: 100px;
+            padding: 40px 0;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-text {
+            font-size: 13px;
+            color: rgba(255,255,255,0.35);
+            font-weight: 300;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .footer-link {
+            color: rgba(255,255,255,0.4);
+            text-decoration: none;
+            font-size: 13px;
+            transition: color 0.3s;
+        }
+
+        .footer-link:hover {
+            color: var(--accent-green);
+        }
+
+        /* ====== CURSOR GLOW ====== */
+        .cursor-glow {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(124,219,138,0.06) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s;
+        }
+
+        /* ====== SCROLL PROGRESS ====== */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-green), var(--accent-teal));
+            z-index: 9999;
+            transition: width 0.1s;
+            box-shadow: 0 0 10px var(--glow-green);
+        }
+
+        /* ====== RESPONSIVE ====== */
+        @media (max-width: 1200px) {
+            .cards-container {
+                flex-direction: column;
+                gap: 24px;
+            }
+
+            .glass-card, .glass-card.wide {
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+
+            h1, .title-ghost {
+                font-size: 56px;
+            }
+
+            .bottom-text {
+                max-width: 100%;
+                font-size: 20px;
+            }
+
+            .stats-row {
+                gap: 30px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                background-attachment: scroll;
+            }
+
+            .main-wrapper {
+                padding: 100px 20px 40px 20px;
+            }
+
+            .navbar {
+                top: 10px;
+                padding: 10px 18px;
+                gap: 4px;
+            }
+
+            .nav-link {
+                font-size: 11px;
+                padding: 6px 10px;
+            }
+
+            .nav-logo {
+                font-size: 15px;
+                margin-right: 10px;
+            }
+
+            h1, .title-ghost {
+                font-size: 40px !important;
+                letter-spacing: -1px;
+            }
+
+            .subtitle {
+                font-size: 15px;
+                line-height: 1.7;
+            }
+
+            .button-group {
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+
+            .btn {
+                padding: 12px 28px;
+                font-size: 13px;
+            }
+
+          
+
+            .cards-container {
+                margin-top: 40px;
+                gap: 20px;
+            }
+
+            .glass-card {
+                padding: 24px;
+                border-radius: 22px;
+            }
+
+            .card-title {
+                font-size: 26px;
+                letter-spacing: 2px;
+            }
+
+            .avatar {
+                width: 44px;
+                height: 44px;
+            }
+
+            .stars {
+                font-size: 14px;
+            }
+
+            .stats-row {
+                gap: 20px;
+                flex-wrap: wrap;
+            }
+
+            .stat-number {
+                font-size: 26px;
+            }
+
+            .bottom-section {
+                margin-top: 50px;
+                gap: 20px;
+            }
+
+            .bottom-text {
+                font-size: 17px;
+            }
+
+            .footer {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-wrapper {
+                padding: 90px 14px 30px 14px;
+            }
+
+            .navbar {
+                padding: 8px 14px;
+            }
+
+            .nav-link {
+                font-size: 10px;
+                padding: 5px 8px;
+            }
+
+            h1, .title-ghost {
+                font-size: 32px !important;
+                margin-bottom: 6px;
+            }
+
+            .subtitle {
+                font-size: 14px;
+                margin-bottom: 25px;
+            }
+
+            .btn {
+                padding: 11px 22px;
+                font-size: 12px;
+            }
+
+            .play-button {
+                width: 42px !important;
+                height: 42px !important;
+                font-size: 13px;
+            }
+
+            .glass-card {
+                padding: 18px;
+                border-radius: 18px;
+            }
+
+            .card-title {
+                font-size: 22px;
+            }
+
+            .avatar {
+                width: 38px;
+                height: 38px;
+                margin-right: 10px;
+            }
+
+            svg {
+                width: 130px !important;
+                height: auto !important;
+            }
+
+            .bottom-text {
+                font-size: 15px;
+            }
+
+            .bottom-accent {
+                height: 50px;
+            }
+
+            .stats-row {
+                gap: 16px;
+            }
+
+            .stat-number {
+                font-size: 22px;
+            }
+
+            .stat-label {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <span class="nav-logo">LC</span>
+        <a href="#" class="nav-link active">Главная</a>
+        <a href="#cards" class="nav-link">меню</a>
+    </nav>
+
+    <div class="main-wrapper">
+
+        <!-- Hero Section -->
+        <div class="header-content reveal-left">
+            <h1 class="title-main">I love</h1>
+            <div class="title-ghost">Coffee</div>
+            <p class="subtitle">откройте для себя новые вкусы настояшего коффе в нашей кофейне вы найдете свой вкус</p>
+            <div class="button-group">
+
+                <a href="#cards"  class="btn btn-glass">меню</a>
+            </div>
+
+ 
+        </div>
+
+        <div class="cards-container" id="cards">
+            
+            <div class="glass-card reveal" data-delay="0">
+                <div class="review-header">
+                    <img src="https://img.magnific.com/free-photo/portrait-white-man-isolated_53876-40306.jpg?semt=ais_hybrid&w=740&q=80" alt="User Avatar" class="avatar">
+                    <div class="reviewer-info">
+                        <span class="reviewer-name">Александр К.</span>
+                        <div class="stars">★★★★★</div>
+                    </div>
+                </div>
+                <p class="card-text">доволен покупкой в даном заведение все было очень вкусно приятная атмосфера и добрый вежливый персонал так же вкусное кофе араматное обязательно приду еще и так же доволным уйду</p>
+            </div>
+
+            <div class="glass-card wide reveal" data-delay="150">
+                <div style="text-align: center;">
+                    <span class="card-badge">
+                        <span class="card-badge-dot"></span>
+                        coffe
+                    </span>
+                </div>
+                <h2 class="card-title">меню</h2>
+                <p class="card-text">
+                    <br>
+                    <P>американо----- 800тг</P>
+   <br>                
+                    <p>  капучино----- 900тг</p>
+                     <br>
+                     <P>'эспрессо----- 700тг'</P>
+                    <br>
+                    <p>латте----- 1000тг
+</p>
+                    <br>
+                    <P>мокачино----- 1100тг</P>
+                    <br>
+                    <P>чай----- 600тг</P>
+            </div>
+
+            <!-- Coffee Cup Card -->
+            <div class="glass-card plant-card reveal" data-delay="300">
+                <svg class="plant-svg" width="150" height="170" viewBox="0 0 180 200" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <!-- Cup Ceramic Gradient -->
+                        <linearGradient id="cupGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+                            <stop offset="45%" style="stop-color:#f0f2f5;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#d5dbe2;stop-opacity:1" />
+                        </linearGradient>
+                        
+                        <!-- Saucer Gradient -->
+                        <linearGradient id="saucerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#cbd2db;stop-opacity:1" />
+                        </linearGradient>
+
+                        <!-- Rich Coffee Gradient -->
+                        <linearGradient id="coffeeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#633314;stop-opacity:1" />
+                            <stop offset="60%" style="stop-color:#3f1d07;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#261003;stop-opacity:1" />
+                        </linearGradient>
+
+                        <!-- Crema Gradient -->
+                        <linearGradient id="cremaGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#d49b6a;stop-opacity:0.9" />
+                            <stop offset="50%" style="stop-color:#f5d2b0;stop-opacity:0.9" />
+                            <stop offset="100%" style="stop-color:#b87b47;stop-opacity:0.9" />
+                        </linearGradient>
+                    </defs>
+
+                    <!-- Steam Wisps -->
+                    <g>
+                        <path class="coffee-steam steam-1" d="M 72 78 Q 63 60 73 44 T 69 22" fill="none" stroke="rgba(255,255,255,0.65)" stroke-width="2.5" stroke-linecap="round"/>
+                        <path class="coffee-steam steam-2" d="M 85 75 Q 94 58 84 40 T 88 18" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="2.5" stroke-linecap="round"/>
+                        <path class="coffee-steam steam-3" d="M 98 78 Q 107 60 97 44 T 102 24" fill="none" stroke="rgba(255,255,255,0.65)" stroke-width="2.5" stroke-linecap="round"/>
+                    </g>
+
+                    <!-- Saucer / Блюдце -->
+                    <ellipse cx="85" cy="168" rx="64" ry="13" fill="url(#saucerGrad)" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+                    <ellipse cx="85" cy="167" rx="58" ry="10" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
+                    <ellipse cx="85" cy="166" rx="38" ry="7" fill="rgba(0,0,0,0.1)"/>
+
+                    <!-- Cup Handle / Ручка кружки -->
+                    <path d="M 116 104 C 146 104 150 140 114 144" fill="none" stroke="url(#cupGrad)" stroke-width="9" stroke-linecap="round"/>
+                    <path d="M 116 104 C 144 104 148 138 114 142" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round"/>
+
+                    <!-- Cup Body / Корпус кружки -->
+                    <path d="M 46 94 L 55 152 Q 57 158 66 160 Q 85 162 104 160 Q 113 158 115 152 L 124 94 Z" fill="url(#cupGrad)" stroke="rgba(255,255,255,0.35)" stroke-width="1"/>
+
+                    <!-- Highlight Shine / Блик -->
+                    <path d="M 54 99 L 61 149" stroke="rgba(255,255,255,0.55)" stroke-width="3" stroke-linecap="round"/>
+
+                    <!-- Cup Rim & Coffee / Ободок и кофе -->
+                    <ellipse cx="85" cy="94" rx="39" ry="12" fill="url(#cupGrad)" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+                    <ellipse cx="85" cy="94" rx="36" ry="10" fill="#2d1609"/>
+                    <ellipse cx="85" cy="95" rx="34" ry="9" fill="url(#coffeeGrad)"/>
+
+                    <!-- Crema Ring / Пенка -->
+                    <ellipse cx="85" cy="95" rx="32" ry="8" fill="none" stroke="url(#cremaGrad)" stroke-width="2" opacity="0.85"/>
+
+                    <!-- Latte Art Heart / Рисунок на пенке -->
+                    <path d="M 85 99 C 82 96 77 94 77 91 C 77 88 80 87 85 90 C 90 87 93 88 93 91 C 93 94 88 96 85 99 Z" fill="#fcf6ed" opacity="0.95"/>
+                    <circle cx="85" cy="100.2" r="0.8" fill="#fcf6ed"/>
+                </svg>
+                <p class="card-text" style="text-align: center;">Свежесваренный кофе — идеальное начало дня. Чашка ароматного напитка подарит заряд бодрости, вдохновение и тепло в каждом глотке.</p>
+            </div>
+        </div>
+
+        <!-- Bottom Section -->
+        <div class="bottom-section reveal" id="bottom" data-delay="100">
+            <div class=" "></div>
+            <p class="bottom-text"><strong>Coffe</strong> —  это ароматный, бодрящий тёмно‑коричневого цвета напиток, получаемый из жареных и размолотых зёрен кофейного дерева</p>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer reveal" data-delay="200">
+            <span class="footer-text">© 2026 I live Coffee. Все права защищены.</span>
+            <div class="footer-links">
+                <a style="color: #fff;" href="#" class="footer-link">Политика конфиденциальности</a>
+                <a style="color: #fff;" href="#" class="footer-link">Контакты</a>
+            </div>
+        </footer>
+    </div>
+
+</body>
+</html>
